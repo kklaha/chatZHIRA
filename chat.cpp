@@ -26,7 +26,7 @@ void priem(SOCKET sock) {
 int main() {
 	setlocale(LC_ALL, "RU");
 	WSAData wsa;
-	if (WSAStartup(MAKEWORD(2, 2), &wsa) == INVALID_SOCKET) {
+	if (WSAStartup(MAKEWORD(2, 2), &wsa)!=0) {
 		std::cerr << "Ошибка инициализации Winsock\n";
 		return -1;
 	}
@@ -60,4 +60,5 @@ int main() {
 	closesocket(s);
 	WSACleanup();
 	return 0;
+
 }
