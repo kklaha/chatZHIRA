@@ -1,4 +1,4 @@
-﻿#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <iostream>
 #include <winsock2.h>
 #include <thread>
@@ -26,13 +26,23 @@ void priem(SOCKET sock) {
 int main() {
 	setlocale(LC_ALL, "RU");
 	WSAData wsa;
-	if (WSAStartup(MAKEWORD(2, 2), &wsa)!=0) {
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) !=0) {
 		std::cerr << "Ошибка инициализации Winsock\n";
 		return -1;
 	}
 	SOCKET s = socket(AF_INET, SOCK_STREAM, 0);
 	if (s == INVALID_SOCKET) {
 		std::cerr << "Ошибка инициализации сокета\n";
+		closesocket(s);
+		WSACleanup();
+		return -1;
+	}
+	sockaddr_in addr = {};
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(12345);
+	addr.sin_addr.s_addr = inet_addr("tetaueta");
+	if (connect(s, (sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR) {
+		std::cerr << "Ошибка подключения к серверу: " << WSAGetLastError() << "\n";
 		closesocket(s);
 		WSACleanup();
 		return -1;
@@ -54,11 +64,9 @@ int main() {
 		send(s, fullMsg.c_str(), fullMsg.length(), 0);
 		std::cout << "> ";
 	}
-	recvThread.join();
 
-	// Закрываем сокет полностью
+	recvThread.join();
 	closesocket(s);
 	WSACleanup();
 	return 0;
-
 }
